@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="icon" href="data:;base64,=">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+
+    <script>
+
+        var resp;
+
+        $(
+            function(){
+                $.ajax({
+                    type: "GET",
+                    url: "http://localhost:8080/todo/list"
+                }).done(function(data) {
+                    resp = data;
+                    getTable(data);
+                });
+            }
+        );
+
+        function add() {
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify({
+                    name: $('#name').val(),
+                    desc: $('#desc').val()
+                }),
+                url: "http://localhost:8080/todo/add",
+                contentType: "application/json"
+            }).done(function(data) {
+                if (data != null && data != "") {
+                    resp.push(data);
+                    getTable(resp);
+                    $('#new_task')[0].reset();
+                }
+            });
+        }
+
+        function update() {
+            var arr = getTaskArray();
+            if (arr.length !== 0) {
+                $.ajax({
+                    type: "POST",
+                    data: JSON.stringify(arr),
+                    url: "http://localhost:8080/todo/update",
+                    contentType: "application/json"
+                });
+            }
+            getTable(resp);
+        }
+
+        function getTable(data) {
+            var result = "";
+            var all = document.getElementById("all_tasks");
+            $.each(data, function(index, task) {
+                var fl = "";
+                if (task.done === true || all.checked) {
+                    if (task.done === true) {
+                        fl = "checked";
+                    }
+                    result += "<tr><td>" + (index + 1) + "</td><td>" + task.name + "</td><td>" + task.desc
+                        + "</td><td>" + task.created + "</td><td><div class=\"checkbox\">"
+                        + "<label><input type=\"checkbox\" id=\"t" + task.id + "\" " + fl + "></label>"
+                        + "</div></td></tr>";
+                }
+            });
+            var table = document.getElementById("tasks");
+            table.innerHTML = result;
+        }
+
+        function getTaskArray() {
+            var arr = [];
+            $.each(resp, function(index, task) {
+                var fl = "t" + task.id;
+                var elem = document.getElementById(fl);
+                if (elem != null &&((task.done === true && !elem.checked) || (task.done === false && elem.checked))) {
+                    task.done = !!elem.checked;
+                    arr.push(task);
+                }
+            });
+            return arr;
+        }
+    </script>
+
+    <title>TODO list</title>
+</head>
+<body>
+<div class="container">
+    <h4>Add new task</h4>
+    <form id="new_task">
+        <div class="form-group">
+            <label for="name">Task name:</label>
+            <input type="text" class="form-control" id="name">
+        </div>
+        <div class="form-group">
+            <label for="desc">Description:</label>
+            <textarea class="form-control" rows="5" id="desc"></textarea>
+        </div>
+        <button type="button" class="btn btn-success" onclick="add()">Add task</button>
+    </form>
+
+    <br><br><br>
+
+    <h4>TODO list</h4>
+    <br>
+    <div class="checkbox">
+        <label><input type="checkbox" id="all_tasks" value="1"> Show all tasks</label>
+    </div>
+    <table class="table table-bordered" id="ts">
+        <thead>
+        <tr>
+            <th>Number</th>
+            <th>Task name</th>
+            <th>Description</th>
+            <th>Creation date</th>
+            <th>Completion</th>
+        </tr>
+        </thead>
+        <tbody id="tasks">
+
+        </tbody>
+    </table>
+    <div class="row float-right">
+        <button type="button" class="btn btn-success" onclick="update()">Update</button>
+    </div>
+</div>
+</body>
+</html>
