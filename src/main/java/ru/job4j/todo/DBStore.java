@@ -2,9 +2,12 @@ package ru.job4j.todo;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
+import javax.management.Query;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * DBStore.
@@ -32,23 +35,28 @@ public class DBStore implements Store {
         return STORE;
     }
 
+    private <T> T tx(final Function<Session, T> command) {
+        final Session session = this.sf.openSession();
+        final Transaction tx = session.beginTransaction();
+        try {
+            T rsl = command.apply(session);
+            tx.commit();
+            return rsl;
+        } catch (final Exception e) {
+            session.getTransaction().rollback();
+            throw e;
+        } finally {
+            session.close();
+        }
+    }
+
     /**
      * The method adds a task to the storage.
      * @param item a task to add.
      */
     @Override
     public void add(Item item) {
-        Session session = this.sf.openSession();
-        try {
-            session.beginTransaction();
-            session.save(item);
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
+        this.tx(session -> session.save(item));
     }
 
     /**
@@ -57,18 +65,12 @@ public class DBStore implements Store {
      */
     @Override
     public void update(List<Item> list) {
-        Session session = this.sf.openSession();
-        try {
-            session.beginTransaction();
-            for (Item item : list) {
-                session.update(item);
-            }
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
+        for (Item item : list) {
+            this.tx(session -> {
+                        session.update(item);
+                        return null;
+                    }
+            );
         }
     }
 
@@ -78,19 +80,12 @@ public class DBStore implements Store {
      */
     @Override
     public void delete(int id) {
-        Session session = this.sf.openSession();
-        try {
-            session.beginTransaction();
-            Item it = new Item();
-            it.setId(id);
+        Item it = new Item();
+        it.setId(id);
+        this.tx(session -> {
             session.delete(it);
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
+            return null;
+        });
     }
 
     /**
@@ -100,19 +95,7 @@ public class DBStore implements Store {
      */
     @Override
     public Item getItem(int id) {
-        Session session = this.sf.openSession();
-        Item item = null;
-        try {
-            session.beginTransaction();
-            item = session.get(Item.class, id);
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
-        return item;
+        return this.tx(session -> session.get(Item.class, id));
     }
 
     /**
@@ -121,18 +104,6 @@ public class DBStore implements Store {
      */
     @Override
     public List<Item> getList() {
-        Session session = this.sf.openSession();
-        List<Item> list = null;
-        try {
-            session.beginTransaction();
-            list = session.createQuery("from ru.job4j.todo.Item").list();
-            session.getTransaction().commit();
-        } catch (Exception e) {
-            session.getTransaction().rollback();
-            e.printStackTrace();
-        } finally {
-            session.close();
-        }
-        return list;
+        return this.tx(session -> session.createQuery("from ru.job4j.todo.Item").list());
     }
 }
