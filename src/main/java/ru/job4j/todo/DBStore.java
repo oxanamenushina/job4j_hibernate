@@ -23,10 +23,9 @@ public class DBStore implements Store {
     /**
      * The instance of SessionFactory.
      */
-    private final SessionFactory sf;
+    private final SessionFactory sf = new Configuration().configure().buildSessionFactory();
 
     private DBStore() {
-        sf = new Configuration().configure().buildSessionFactory();
     }
 
     public static Store getInstance() {

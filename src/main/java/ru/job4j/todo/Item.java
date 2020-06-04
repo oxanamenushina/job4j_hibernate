@@ -31,13 +31,6 @@ public class Item {
     @Column(name = "task_done")
     private boolean done;
 
-    public Item(String name, String desc, String created, boolean done) {
-        this.name = name;
-        this.desc = desc;
-        this.created = created;
-        this.done = done;
-    }
-
     public Item() {
     }
 

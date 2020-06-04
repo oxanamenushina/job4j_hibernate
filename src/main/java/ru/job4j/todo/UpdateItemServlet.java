@@ -7,9 +7,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Type;
 import java.util.List;
 
@@ -29,15 +27,10 @@ public class UpdateItemServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        BufferedReader json = new BufferedReader(new InputStreamReader(req.getInputStream(), "UTF-8"));
-        StringBuilder sb = new StringBuilder();
-        String str;
-        while ((str = json.readLine()) != null) {
-            sb.append(str);
-        }
+        DataReader reader = new RequestReader();
         Gson gson = new Gson();
         Type type = new TypeToken<List<Item>>() { }.getType();
-        List<Item> list = gson.fromJson(sb.toString(), type);
+        List<Item> list = gson.fromJson(reader.read(req), type);
         this.logic.update(list);
     }
 }

@@ -36,7 +36,7 @@ public interface Validate {
 
     /**
      * The method returns a task with the specified id.
-     * @param id user ID.
+     * @param id task ID.
      * @return task with the specified id.
      */
     Item getItem(int id);
