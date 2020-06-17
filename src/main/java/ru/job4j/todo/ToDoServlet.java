@@ -21,7 +21,7 @@ public class ToDoServlet extends HttpServlet {
     /**
      * The instance of ValidateService.
      */
-    private final Validate logic = ValidateService.getInstance();
+    private final Validate<Item> logic = ValidateService.getInstance();
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -29,7 +29,7 @@ public class ToDoServlet extends HttpServlet {
         PrintWriter writer = resp.getWriter();
         resp.setContentType("application/json");
         resp.setCharacterEncoding("UTF-8");
-        writer.print(result);
+        writer.append(result);
         writer.flush();
     }
 }

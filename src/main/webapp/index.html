@@ -69,7 +69,7 @@
                         fl = "checked";
                     }
                     result += "<tr><td>" + (index + 1) + "</td><td>" + task.name + "</td><td>" + task.desc
-                        + "</td><td>" + task.created + "</td><td><div class=\"checkbox\">"
+                        + "</td><td>" + task.user.name + "</td><td>" + task.created + "</td><td><div class=\"checkbox\">"
                         + "<label><input type=\"checkbox\" id=\"t" + task.id + "\" " + fl + "></label>"
                         + "</div></td></tr>";
                 }
@@ -90,12 +90,22 @@
             });
             return arr;
         }
+
+        function ex() {
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8080/todo/signout",
+                // contentType: "application/json"
+            });
+            window.location.href = "http://localhost:8080/todo/signin";
+        }
     </script>
 
     <title>TODO list</title>
 </head>
 <body>
 <div class="container">
+
     <h4>Add new task</h4>
     <form id="new_task">
         <div class="form-group">
@@ -122,6 +132,7 @@
             <th>Number</th>
             <th>Task name</th>
             <th>Description</th>
+            <th>User</th>
             <th>Creation date</th>
             <th>Completion</th>
         </tr>
@@ -130,8 +141,12 @@
 
         </tbody>
     </table>
-    <div class="row float-right">
+    <div class="row float-left">
         <button type="button" class="btn btn-success" onclick="update()">Update</button>
+    </div>
+    <br><br><br>
+    <div class="row float-left">
+        <button type="button" class="btn btn-success" onclick="ex()">Exit</button>
     </div>
 </div>
 </body>

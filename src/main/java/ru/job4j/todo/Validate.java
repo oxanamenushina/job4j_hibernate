@@ -9,41 +9,41 @@ import java.util.List;
  * @version $Id$
  * @since 0.1
  */
-public interface Validate {
+public interface Validate<T> {
 
     /**
-     * The method checks the input for the add task operation.
-     * @param item a task to add.
-     * @return true - a task added to the storage.
+     * The method checks the input for the add element operation.
+     * @param elem an element to add.
+     * @return true - the element added to the storage.
      */
-    boolean add(Item item);
+    boolean add(T elem);
 
     /**
      * The method checks the input
-     * for the update tasks operation.
-     * @param list a list of tasks to update.
-     * @return true - tasks updated.
+     * for the update element operation.
+     * @param elem an element to update.
+     * @return true - the element updated.
      */
-    boolean update(List<Item> list);
+    boolean update(T elem);
 
     /**
      * The method checks the input
-     * for the delete task operation.
-     * @param id a task to delete.
-     * @return true - a task deleted.
+     * for the delete element operation.
+     * @param id an element to delete.
+     * @return true - the element deleted.
      */
     boolean delete(int id);
 
     /**
-     * The method returns a task with the specified id.
-     * @param id task ID.
-     * @return task with the specified id.
+     * The method returns an element with the specified id.
+     * @param id element ID.
+     * @return an element with the specified id.
      */
-    Item getItem(int id);
+    T getElem(int id);
 
     /**
-     * The method returns a list of tasks.
-     * @return a list of tasks.
+     * The method returns a list of elements.
+     * @return a list of elements.
      */
-    List<Item> getList();
+    List<T> getList();
 }

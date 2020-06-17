@@ -15,5 +15,6 @@
         <property name="hibernate.hbm2ddl.auto">create</property>
 
         <mapping class="ru.job4j.todo.Item" />
+        <mapping class="ru.job4j.todo.User" />
     </session-factory>
 </hibernate-configuration>

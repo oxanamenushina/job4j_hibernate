@@ -23,7 +23,7 @@ public class UpdateItemServlet extends HttpServlet {
     /**
      * The instance of ValidateService.
      */
-    private final Validate logic = ValidateService.getInstance();
+    private final Validate<Item> logic = ValidateService.getInstance();
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -31,6 +31,8 @@ public class UpdateItemServlet extends HttpServlet {
         Gson gson = new Gson();
         Type type = new TypeToken<List<Item>>() { }.getType();
         List<Item> list = gson.fromJson(reader.read(req), type);
-        this.logic.update(list);
+        for (Item it : list) {
+            this.logic.update(it);
+        }
     }
 }

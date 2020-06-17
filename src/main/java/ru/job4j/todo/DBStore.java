@@ -5,7 +5,6 @@ import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 
-import javax.management.Query;
 import java.util.List;
 import java.util.function.Function;
 
@@ -51,59 +50,67 @@ public class DBStore implements Store {
     }
 
     /**
-     * The method adds a task to the storage.
-     * @param item a task to add.
+     * The method adds an element to the storage.
+     * @param elem an element to add.
      */
     @Override
-    public void add(Item item) {
-        this.tx(session -> session.save(item));
+    public <K> void add(K elem) {
+        this.tx(session -> session.save(elem));
     }
 
     /**
-     * The method updates tasks.
-     * @param list tasks.
+     * The method updates an element.
+     * @param elem an element to update.
      */
     @Override
-    public void update(List<Item> list) {
-        for (Item item : list) {
-            this.tx(session -> {
-                        session.update(item);
-                        return null;
-                    }
-            );
-        }
-    }
-
-    /**
-     * The method deletes a task.
-     * @param id a task to delete.
-     */
-    @Override
-    public void delete(int id) {
-        Item it = new Item();
-        it.setId(id);
+    public <K> void update(K elem) {
         this.tx(session -> {
-            session.delete(it);
+                    session.update(elem);
+                    return null;
+                }
+        );
+    }
+
+    /**
+     * The method deletes an element.
+     * @param elem an element to delete.
+     */
+    @Override
+    public <K> void delete(K elem) {
+//        Item it = new Item();
+//        it.setId(id);
+        this.tx(session -> {
+            session.delete(elem);
             return null;
         });
     }
 
     /**
-     * The method returns a task with the specified id.
-     * @param id task ID.
-     * @return a task with the specified id.
+     * The method returns an element with the specified id.
+     * @param id element ID.
+     * @param className
+     * @return an element with the specified id.
      */
     @Override
-    public Item getItem(int id) {
-        return this.tx(session -> session.get(Item.class, id));
+    public <K> K getElem(int id, String className) {
+        K elem = null;
+        try {
+            Class cl = Class.forName(className);
+            elem = (K) this.tx(session -> session.get(cl, id));
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return elem;
     }
 
     /**
-     * The method returns a list of tasks.
-     * @return a list of tasks.
+     * The method returns a list of elements.
+     * @param className
+     * @return a list of elements.
      */
     @Override
-    public List<Item> getList() {
-        return this.tx(session -> session.createQuery("from ru.job4j.todo.Item").list());
+    public <K> List<K> getList(String className) {
+        String str = "from ru.job4j.todo." + className;
+        return this.tx(session -> session.createQuery(str).list());
     }
 }

@@ -12,33 +12,35 @@ import java.util.List;
 public interface Store {
 
     /**
-     * The method adds a task to the storage.
-     * @param item a task to add.
+     * The method adds an element to the storage.
+     * @param elem an element to add.
      */
-    void add(Item item);
+    <T> void add(T elem);
 
     /**
-     * The method updates tasks.
-     * @param items tasks.
+     * The method updates an element.
+     * @param elem an element to update.
      */
-    void update(List<Item> items);
+    <T> void update(T elem);
 
     /**
-     * The method deletes a task.
-     * @param id a task to delete.
+     * The method deletes an element.
+     * @param elem an element to delete.
      */
-    void delete(int id);
+    <T> void delete(T elem);
 
     /**
-     * The method returns a task with the specified id.
-     * @param id task ID.
-     * @return a task with the specified id.
+     * The method returns an element with the specified id.
+     * @param id element ID.
+     * @param className
+     * @return an element with the specified id.
      */
-    Item getItem(int id);
+    <T> T getElem(int id, String className);
 
     /**
-     * The method returns a list of tasks.
-     * @return a list of tasks.
+     * The method returns a list of elements.
+     * @param className
+     * @return a list of elements.
      */
-    List<Item> getList();
+    <T> List<T> getList(String className);
 }
